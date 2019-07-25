@@ -75,3 +75,10 @@ Para que muestre también los parámetros:
       <appender-ref ref="JPA"/>
    </category>
 ```
+
+## Vlad Mihalcea
+Esta es la persona que os comenté que es Java Champion y experto en JPA/Hibernate.
+
+Y este es su blog: https://vladmihalcea.com/. 
+
+Tiene artículos muy interesantes y didácticos.
