@@ -52,22 +52,23 @@ public class Index {
         this.post = post;
     }
 
-    public void testPersistenceContextTheRightWay() {
+    public void testPersistenceContextFromEJB() {
         postsManager.testPCOK(posts.get(0).getId());
     }
 
-    public void testPersistenceContextTheWrongWay() {
+    public void testPersistenceContextFromManagedBean() {
         Long postId = posts.get(0).getId();
         Post post;
         for (int i = 0; i < 100; i++) {
             post = postsManager.find(postId);
             post.setContent("New content " + RANDOM.nextInt(100));
         }
+
         // Veréis que aquí no se genera ninguna consulta UIPDATE, esto es porque los cambios se han hecho siempre fuera del
         // contexto de persistencia, y es entonces cuando se hace necesario crear el saveOrUpdate para hacer el merge de las
         // entidades que hemos modificado (porque las hemos modificado fuera del contexto de persistencia)
 
-        // Sin embargo en testPersistenceContextTheRightWay no hace falta saveOrUpdate, ni merge ni nada. Todas las modificaciones
+        // Sin embargo en testPersistenceContextFromEJB no hace falta saveOrUpdate, ni merge ni nada. Todas las modificaciones
         // se realizan dentro del contexto de persistencia y por lo tanto tdo queda cuargado cuando finaliza el método.
     }
 }
