@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+>
+<h:head>
+
+</h:head>
+
+<h:body>
+    Hello JPA World!
+
+    <h:form>
+        <p:commandButton action="#{index.createRandomPost}" value="Create Random Post" update="postsTable" />
+        <p:commandButton action="#{index.testPersistenceContextTheRightWay}" value="Test PC the right way" />
+        <p:commandButton action="#{index.testPersistenceContextTheWrongWay}" value="Test PC the wrong way" />
+    </h:form>
+
+    <br />
+    <p:dataTable value="#{index.allPosts}" var="post" id="postsTable">
+        <p:column headerText="Id">#{post.id}</p:column>
+        <p:column headerText="Content">#{post.content}</p:column>
+        <p:column headerText="Status">#{post.status}</p:column>
+        <p:column headerText="Num Of Comments">#{fn:length(post.comments)}</p:column>
+        <p:column headerTest="ACtions">
+            <h:form>
+                <p:commandButton action="#{index.delete}" value="Delete" update="postsTable">
+                    <f:setPropertyActionListener value="#{post}" target="#{index.post}" />
+                </p:commandButton>
+            </h:form>
+        </p:column>
+    </p:dataTable>
+</h:body>
+</html>
