@@ -25,7 +25,7 @@ Y recordemos que esto tampoco significa que `LAZY` sea siempre la opción correc
 
 La diferencia entre poner un `fetch join` y olvidárselo puede ser pasar de 4000 consultas a unas pocas. Revisar siempre las consultas que se generan no siempre es viable por restricciones de tiempo en el desarrollo, pero en la medida de lo posible deberan revisarse, al menos en los puntos que puedan resultar más conflictivos, y siempre debera ser el primer paso cuando se detectan problemas de rendimiento.
 
-Para poder mostrar las consultas en el JBoss de la dgtic deberemso hacer lo siguiente:
+Para poder mostrar las consultas en el JBoss de la dgtic deberemos hacer lo siguiente (el archivo a modificar es `jboss-eap-5.2/jboss-as/server/default/conf/jboss-log4j.xml`):
 
 1. Añadir un nuevo Appender
 
