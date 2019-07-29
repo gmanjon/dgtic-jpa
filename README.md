@@ -17,6 +17,9 @@ En esta misma aplicación podemos ver un ejemplo de lo mencionado en este punto.
 ```java
 @ManagedBean
 public class Index {
+
+    @EJB(name = PostsManager.JNDI_NAME)
+    PostManagerLocalFacade postsManager;
     
     // . . .
     
@@ -36,7 +39,7 @@ public class Index {
 
 ```java
 @Stateless
-public class PostsManager {
+public class PostsManager implements PostManagerLocalFacade {
     
     // . . .
     
