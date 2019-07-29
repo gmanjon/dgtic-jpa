@@ -3,6 +3,7 @@ package es.caib.jpa.backend.control;
 import es.caib.jpa.backend.boundary.PostManagerLocalFacade;
 import es.caib.jpa.backend.entity.Comment;
 import es.caib.jpa.backend.entity.Post;
+import es.caib.jpa.backend.entity.PostDetails;
 import es.caib.jpa.backend.entity.Status;
 import org.jboss.ejb3.annotation.LocalBinding;
 
@@ -36,8 +37,16 @@ public class PostsManager implements PostManagerLocalFacade {
         post.setContent("asdasdcasd " + RANDOM.nextInt());
         post.setStatus(Status.OPEN);
         fillWithRandomComments(post);
+        fillDetails(post);
         em.persist(post);
         return post;
+    }
+
+    private void fillDetails(Post post) {
+        PostDetails postDetails = new PostDetails();
+        postDetails.setUsername("gmanjon");
+        postDetails.setPost(post);
+        post.addPostDetails(postDetails);
     }
 
     public void delete(Post post) {

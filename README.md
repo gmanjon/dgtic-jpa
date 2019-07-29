@@ -75,3 +75,102 @@ Para que muestre también los parámetros:
       <appender-ref ref="JPA"/>
    </category>
 ```
+
+## Cómo hacer las @OneToOne LAZY (con optional=true)
+Cuando una relación `@OneToONe` se marca como `optiona=true` Hibernate no sabe si existe la relación sin hacer una consulta. Y necesita saberlo para saber si tiene que lanzar un `NullPointerException` (si no existe) o un `LazyInitializationException`.
+
+Sin embargo, a través de una sería de tareas ant (en versiones antiguas de Hibernate) y plugins de Maven (en versiones no tan antiguas) hibernate puede introducir, en tiempo de compilación, modificaciones en el bytecode de las entidades para solventar este problema. Este proceso se llama Bytecode Enhancement.
+
+En el caso concreto de la DGTIC, siendo un JBoss 5.2, con una versión de Hibernate 3.3, es necesaria la tarea Ant. Pero esta puede ser llamada a traves de un plugin de maven que lo único que hace es lanzar tareas Ant.
+
+Para ello hemos añadido el siguiente fragmento en el módulo jpa-ejb:
+
+```xml
+    <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+            <execution>
+                <id>Instrument domain classes</id>
+                <configuration>
+                    <tasks>
+                        <taskdef name="instrument"
+                                 classname="org.hibernate.tool.instrument.javassist.InstrumentTask">
+                            <classpath>
+                                <path refid="maven.dependency.classpath"/>
+                                <path refid="maven.plugin.classpath"/>
+                            </classpath>
+                        </taskdef>
+                        <instrument verbose="true">
+                            <fileset dir="${project.build.outputDirectory}">
+                                <include name="**/entity/*.class"/>
+                            </fileset>
+                        </instrument>
+                    </tasks>
+                </configuration>
+                <phase>process-classes</phase>
+                <goals>
+                    <goal>run</goal>
+                </goals>
+            </execution>
+        </executions>
+        <dependencies>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate</artifactId>
+                <version>3.3.2.ga</version>
+            </dependency>
+            <dependency>
+                <groupId>javassist</groupId>
+                <artifactId>javassist</artifactId>
+                <version>3.12.0.GA</version>
+            </dependency>
+        </dependencies>
+    </plugin>
+```  
+
+Este proceso en ocasiones requiere modificar clases que usan las entidades fuera del módulo ejb, por lo que es posible que sea necesario añadir la siguiente dependencia en otros módulos:
+
+```xml
+    <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate</artifactId>
+        <version>3.3.2.ga</version>
+        <scope>provided</scope>
+    </dependency>
+```
+
+Pero esto no es suficiente, hay que añadir una anotación en la clase padre de la relación `@OneToOne`:
+
+```java
+    @LazyToOne(value = LazyToOneOption.NO_PROXY)
+```
+
+Esta anotación se encuentra en el artefacto de hibernate `hibernate-annotations`, cuya version en JBoss 5.2 es 3.4.0.GA. Para usar dicha anotación deberemos añadir la siguiente dependencia en el `pom.xml` del módulo ejb:
+
+```xml
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-annotations</artifactId>
+            <version>3.4.0.GA</version>
+            <scope>provided</scope>
+        </dependency>
+```
+
+Y además deberemos asegurarnos de que la relación hija no tenga `@MapsId` (es decir, que tenga su propio id o que este no sea Composite Id)
+
+Con esto debería funcionar con Java 6. El problema es que el estándar de la DGTIC establece que se use java 7, y cuando el JBoss se arranca con Java 7 el el bytecode generado no está preparado para superar el Verificador de bytecode de java 7 y este lanza una excepción.
+
+Afortunadamente existe un workarround, pero implica añadir una propiedad del sistema para el arranque del servidor:
+
+```
+    -XX:-UseSplitVerifier
+``` 
+
+Esto hará que el verificador de java funcione en modo java 6 cuando sea necesario.
+
+En resumen, para qeu funcione un `@OneToOne(fetch = FetchType.LAZY, optional = false)` se han de realizar los siguientes pasos:
+
+1. Introducir el plugin de maven para realizar el Bytecode Enhancer en el modulo ejb
+2. Introducir las dependencias necesarias en otros módulos
+3. Añadir `@LazyToOne(value = LazyToOneOption.NO_PROXY)` en la relación del lado del padre
+4. Añadir a `JAVA_OPTS` la propiedad `-XX:-UseSplitVerifier` en el arranque del JBoss. 

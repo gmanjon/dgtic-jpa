@@ -6,10 +6,8 @@ import es.caib.jpa.backend.entity.Post;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.el.MethodExpression;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
-import javax.faces.bean.ViewScoped;
 import java.util.List;
 import java.util.Random;
 
@@ -70,5 +68,11 @@ public class Index {
 
         // Sin embargo en testPersistenceContextFromEJB no hace falta saveOrUpdate, ni merge ni nada. Todas las modificaciones
         // se realizan dentro del contexto de persistencia y por lo tanto tdo queda cuargado cuando finaliza el método.
+    }
+
+    public void testLazyOneToOne() {
+        Long postId = posts.get(0).getId();
+        Post post = postsManager.find(postId);
+        System.out.println("Username: " + post.getPostDetails().getUsername());
     }
 }
