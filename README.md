@@ -12,6 +12,47 @@ Recordemos que el Contexto de Persistencia tiene una vida que dura lo mismo que 
 
 Los EJB sirven para realizar la lógica de negocio, y los `@ManagedBeans` deberían usarse solamente para controlar el front y enlazarlo con la lógica de negocio de los EJB.
 
+En esta misma aplicación podemos ver un ejemplo de lo mencionado en este punto. En el front tenemos dos botones, que sirven para lanzar do smétodos dentro del `@ManagedBean` `Index.java`:
+
+```java
+@ManagedBean
+public class Index {
+    
+    // . . .
+    
+    public void testPersistenceContextFromEJB() {
+        postsManager.testPCOK(posts.get(0).getId());
+    }
+
+    public void testPersistenceContextFromManagedBean() {
+        Long postId = posts.get(0).getId();
+        Post post;
+        for (int i = 0; i < 100; i++) {
+            post = postsManager.find(postId);
+            post.setContent("New content " + RANDOM.nextInt(100));
+        }
+    }
+```
+
+```java
+@Stateless
+public class PostsManager {
+    
+    // . . .
+    
+    public void testPCOK(Long postId) {
+        Post post;
+        for (int i = 0; i < 100; i++) {
+            post = em.find(Post.class, postId);
+            post.setContent("New content " + RANDOM.nextInt(100));
+        }
+    }
+```
+
+La lógica consiste en un bucle que consulta el `EntityManager` 100 veces, en uno se hace desde el @ManagedBean y en el otro desde el EJB. Puede obversvarse en las consultas generadas que el primero lanza 100 consultas contra la base de datos mientras que el segundo solo 1. Esto da una idea de los problemas de rendimiento que puede generar realizar la lógica de negocio fuera de los EJB.
+
+Podréis observar también que en `testPersistenceContextFromManagedBean` no se genera ninguna consulta UIPDATE, esto es debido a que los cambios se han hecho siempre fuera del contexto de persistencia, y es entonces cuando se hace necesario crear el clsico `saveOrUpdate()` para hacer el `merge()` de las entidades que hemos modificado (porque las hemos modificado fuera del contexto de persistencia). Sin embargo en `testPersistenceContextFromEJB` no hace falta ningún `saveOrUpdate()`, ni `merge()` ni nada. Todas las modificaciones se realizan dentro del contexto de persistencia y por lo tanto todo queda guargado cuando finaliza el método.
+
 ### EAGER
 Nunca deberemos meter un `FetchType.EAGER` en una relación `@OneToMany` o `@ManyToMany`. Esto suele hacerse para evitar un `LazyIitializationException`, que normalmente se da por dos motivos:
 1. Por un lado se está realizando lógica de negocio en los `@ManagedBeans`, y por lo tanto las propiedades `LAZY` ya no pueden ser recuperadas. 
