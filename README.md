@@ -25,7 +25,7 @@ Y recordemos que esto tampoco significa que `LAZY` sea siempre la opción correc
 
 La diferencia entre poner un `fetch join` y olvidárselo puede ser pasar de 4000 consultas a unas pocas. Revisar siempre las consultas que se generan no siempre es viable por restricciones de tiempo en el desarrollo, pero en la medida de lo posible deberan revisarse, al menos en los puntos que puedan resultar más conflictivos, y siempre debera ser el primer paso cuando se detectan problemas de rendimiento.
 
-Para poder mostrar las consultas en el JBoss de la dgtic deberemso hacer lo siguiente:
+Para poder mostrar las consultas en el JBoss de la dgtic deberemos hacer lo siguiente (el archivo a modificar es `jboss-eap-5.2/jboss-as/server/default/conf/jboss-log4j.xml`):
 
 1. Añadir un nuevo Appender
 
@@ -75,6 +75,13 @@ Para que muestre también los parámetros:
       <appender-ref ref="JPA"/>
    </category>
 ```
+
+## Vlad Mihalcea
+Esta es la persona que os comenté que es Java Champion y experto en JPA/Hibernate.
+
+Y este es su blog: https://vladmihalcea.com/. 
+
+Tiene artículos muy interesantes y didácticos.
 
 ## Cómo hacer las @OneToOne LAZY (con optional=true)
 Cuando una relación `@OneToONe` se marca como `optiona=true` Hibernate no sabe si existe la relación sin hacer una consulta. Y necesita saberlo para saber si tiene que lanzar un `NullPointerException` (si no existe) o un `LazyInitializationException`.
