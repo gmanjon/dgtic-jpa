@@ -83,7 +83,7 @@ Y este es su blog: https://vladmihalcea.com/.
 
 Tiene artículos muy interesantes y didácticos.
 
-## Cómo hacer las @OneToOne LAZY (con optional=true)
+## Cómo hacer funcionar las relaciones `@OneToOne(fetch = FetchType.LAZY, optional = true)`
 Cuando una relación `@OneToONe` se marca como `optiona=true` Hibernate no sabe si existe la relación sin hacer una consulta. Y necesita saberlo para saber si tiene que lanzar un `NullPointerException` (si no existe) o un `LazyInitializationException`.
 
 Sin embargo, a través de una sería de tareas ant (en versiones antiguas de Hibernate) y plugins de Maven (en versiones no tan antiguas) hibernate puede introducir, en tiempo de compilación, modificaciones en el bytecode de las entidades para solventar este problema. Este proceso se llama Bytecode Enhancement.
