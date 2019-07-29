@@ -165,7 +165,7 @@ Esta anotación se encuentra en el artefacto de hibernate `hibernate-annotations
 
 Y además deberemos asegurarnos de que la relación hija no tenga `@MapsId` (es decir, que tenga su propio id o que este no sea Composite Id)
 
-Con esto debería funcionar con Java 6. El problema es que el estándar de la DGTIC establece que se use java 7, y cuando el JBoss se arranca con Java 7 el el bytecode generado no está preparado para superar el Verificador de bytecode de java 7 y este lanza una excepción.
+Con esto debería funcionar con Java 6. El problema es que el estándar de la DGTIC establece que se use java 7, y cuando el JBoss se arranca con Java 7 el bytecode generado no está preparado para superar el Verificador de bytecode de java 7 y este lanza una excepción.
 
 Afortunadamente existe un workarround, pero implica añadir una propiedad del sistema para el arranque del servidor:
 
@@ -175,7 +175,7 @@ Afortunadamente existe un workarround, pero implica añadir una propiedad del si
 
 Esto hará que el verificador de java funcione en modo java 6 cuando sea necesario.
 
-En resumen, para qeu funcione un `@OneToOne(fetch = FetchType.LAZY, optional = false)` se han de realizar los siguientes pasos:
+En resumen, para que funcione un `@OneToOne(fetch = FetchType.LAZY, optional = true)` se han de realizar los siguientes pasos:
 
 1. Introducir el plugin de maven para realizar el Bytecode Enhancer en el modulo ejb
 2. Introducir las dependencias necesarias en otros módulos
