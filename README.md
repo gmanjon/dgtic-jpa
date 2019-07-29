@@ -10,7 +10,7 @@ Los getters en `@ManagedBeans` son llamados en repetidas ocasiones por el motor 
 
 Recordemos que el Contexto de Persistencia tiene una vida que dura lo mismo que la transacción, que a su vez empieza y termina con cada método de negocio de un EJB. Esto implica que si realizamos lógica de negocio dentro de un `@ManagedBean`, las consultas de base de datos que se realizan a un EJB, ya mapeadas a objetos java, se tienen que volver a consultar y mapear en una nueva llamada a un método distinto (o incluso el mismo) de un EJB. Y es al realizar las modificaciones fuera del EJB cuando se hace necesario crear un `saveOrUpdate()` (con un `em.merge()` dentro), para guardar los cambios. Si la lógica se realiza dentro del EJB estos cambios ya se hacen persistentes de forma automática.
 
-Los EJB sirven para realizar la lógica de negocio, y los `@ManagedBeans` deberían usarse solamente para controlar el front.
+Los EJB sirven para realizar la lógica de negocio, y los `@ManagedBeans` deberían usarse solamente para controlar el front y enlazarlo con la lógica de negocio de los EJB.
 
 ### EAGER
 Nunca deberemos meter un `FetchType.EAGER` en una relación `@OneToMany` o `@ManyToMany`. Esto suele hacerse para evitar un `LazyIitializationException`, que normalmente se da por dos motivos:
