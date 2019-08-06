@@ -167,8 +167,8 @@ Para ello hemos añadido el siguiente fragmento en el módulo jpa-ejb:
         <dependencies>
             <dependency>
                 <groupId>org.hibernate</groupId>
-                <artifactId>hibernate</artifactId>
-                <version>3.3.2.ga</version>
+                <artifactId>hibernate-core</artifactId>
+                <version>3.3.2.GA</version>
             </dependency>
             <dependency>
                 <groupId>javassist</groupId>
@@ -184,8 +184,8 @@ Este proceso en ocasiones requiere modificar clases que usan las entidades fuera
 ```xml
     <dependency>
         <groupId>org.hibernate</groupId>
-        <artifactId>hibernate</artifactId>
-        <version>3.3.2.ga</version>
+        <artifactId>hibernate-core</artifactId>
+        <version>3.3.2.GA</version>
         <scope>provided</scope>
     </dependency>
 ```
